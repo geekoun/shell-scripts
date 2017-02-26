@@ -3,14 +3,15 @@
 #nom du jour de la semaine
 now=$(/bin/date +"%d-%m-%Y")
 jour=$(date +%A)
-destination="/home/backup/$jour"
-repertoire="/home/www"
-user_mysql=''
-pass_mysql=''
-user=''
-pass=''
-adresse=''
-port=''
+destination="/your/directory/save/$jour"
+repertoire="/your/directory/"
+path_distant="/your/path/distant"
+user_mysql=""
+pass_mysql=""
+user=""
+pass=""
+adresse=""
+port=""
 red='\033[0;31m'
 green='\033[0;32m'
 cyan='\033[0;36m'
@@ -65,7 +66,7 @@ then
         	fi
 
 		printf "${blue}__COPIE BDD ${db^^} DISTANT__${reset}\n"
-        	/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p $port' --ignore-errors $destination/$db.sql.gz $user@$adresse:/volume1/save/$jour
+        	/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p $port' --ignore-errors $destination/$db.sql.gz $user@$adresse:$path_distant
 		if [ "$?" -eq "0" ]
         	then
                 	printf "        ${green}success:${reset} La copie distante de la BDD est un succès\n\n"
@@ -105,7 +106,7 @@ then
 
 			#Backup sur server distant
 			printf "${blue}__COPIE DISTANTE__${reset}\n"
-			/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p $port' --ignore-errors $site $user@$adresse:/volume1/save/$jour
+			/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p $port' --ignore-errors $site $user@$adresse:$path_distant
 			if [ "$?" -eq "0" ]
 			then
 				printf "  	${green}success:${reset} La copie distante est un succès\n\n"

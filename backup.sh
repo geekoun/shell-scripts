@@ -108,7 +108,6 @@ then
 			#Backup sur server distant
 			printf "${blue}__COPIE DISTANTE__${reset}\n"
 			/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e "ssh -p ${port_distant}" --ignore-errors $site ${user_distant}@$address_distant:$path_distant
-			#/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p 1664' --ignore-errors $site geekoun@hoplaventure.synology.me:/volume1/save/$jour
 			if [ "$?" -eq "0" ]
 			then
 				printf "  	${green}success:${reset} La copie distante est un succès\n\n"

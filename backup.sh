@@ -30,7 +30,7 @@ then
 		then
 			printf "${green}success:${reset} Le répertoire $x a été créé\n\n"
 		else
-			printf "${red}error:${reset} Attention, e répertoire $x n'a pas été créé\n\n"
+			printf "${red}error:${reset} Attention, le répertoire $x n'a pas été créé\n\n"
 		fi
 	done
 else
@@ -115,7 +115,7 @@ then
 				printf "	${red}error:${reset} La copie distante a échoué\n\n"
 			fi
 		else
-			printf "${red}error:${reset} Attention, le répertoire a copier n'existe pas\n"
+			printf "${red}error:${reset} Attention, le répertoire à copier n'existe pas\n"
 		fi
 	done
 else

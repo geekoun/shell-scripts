@@ -46,7 +46,7 @@ then
 	#Backup BDD
 	printf "================= ${cyan}COPIE DES BDD${reset} =================\n"
 
-	databases=$(/usr/bin/mysql -u geekoun -pMRsW39vA.c4+FY -e "SHOW databases;" | grep -Ev "(Database|information_schema|mysql|performance_schema|slidebox|slidebox_save|wordpress)")
+	databases=$(/usr/bin/mysql -u geekoun -pMRsW39vA.c4+FY -e "SHOW databases;" | grep -Ev "(Database|information_schema|mysql|performance_schema|wordpress)")
         for db in $databases;
 	do
 		printf "${blue}__BDD ${db^^}__${reset}\n"

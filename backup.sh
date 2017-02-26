@@ -46,11 +46,11 @@ then
 	#Backup BDD
 	printf "================= ${cyan}COPIE DES BDD${reset} =================\n"
 
-	databases=$(/usr/bin/mysql -u geekoun -pMRsW39vA.c4+FY -e "SHOW databases;" | grep -Ev "(Database|information_schema|mysql|performance_schema|wordpress)")
+	databases=$(/usr/bin/mysql -u geekoun -pMRsW39vA.c4+FY -e "SHOW databases;" | grep -Ev "(Database|information_schema|mysql|performance_schema)")
         for db in $databases;
 	do
 		printf "${blue}__BDD ${db^^}__${reset}\n"
-		/usr/bin/mysqldump -u geekoun -pMRsW39vA.c4+FY --force --opt --skip-lock-tables --events --databases $db | gzip > $destination/$db.sql.gz
+		/usr/bin/mysqldump -u $user -p$pass --force --opt --skip-lock-tables --events --databases $db | gzip > $destination/$db.sql.gz
 		if [ "$?" -eq "0" ]
         	then
         		printf "        ${green}success:${reset} La copie de la BDD est un succès\n"
@@ -59,7 +59,7 @@ then
         	fi
 
 		printf "${blue}__COPIE BDD ${db^^} DISTANT__${reset}\n"
-        	/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p 1664' --ignore-errors $destination/$db.sql.gz geekoun@hoplaventure.synology.me:/volume1/save/$jour
+        	/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p $port' --ignore-errors $destination/$db.sql.gz $user@$adresse:/volume1/save/$jour
 		if [ "$?" -eq "0" ]
         	then
                 	printf "        ${green}success:${reset} La copie distante de la BDD est un succès\n\n"
@@ -99,7 +99,7 @@ then
 
 			#Backup sur server distant
 			printf "${blue}__COPIE DISTANTE__${reset}\n"
-			/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p 1664' --ignore-errors $site geekoun@hoplaventure.synology.me:/volume1/save/$jour
+			/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p $port' --ignore-errors $site $user@$adresse:/volume1/save/$jour
 			if [ "$?" -eq "0" ]
 			then
 				printf "  	${green}success:${reset} La copie distante est un succès\n\n"

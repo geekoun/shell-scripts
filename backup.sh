@@ -3,22 +3,23 @@
 #nom du jour de la semaine
 now=$(/bin/date +"%d-%m-%Y")
 jour=$(date +%A)
-destination="/your/directory/save/$jour"
-repertoire="/your/directory/"
-path_distant="/your/path/distant"
-user_mysql=""
-pass_mysql=""
-user=""
-pass=""
-adresse=""
-port=""
+dest_directory= "/your/dest_backup/"
+dest="/your/dest_backup/$jour"
+directory="/your/directory/to/save"
+path_distant="/your/directory/distant/$jour"
+user_mysql="your_user_name"
+pass_mysql="your_pass_name"
+user_distant="your_user_name_distant"
+pass_distant="your_user_pass_distant"
+address_distant="your_address_distant"
+port_distant="your_port_distant"
 red='\033[0;31m'
 green='\033[0;32m'
 cyan='\033[0;36m'
 blue='\033[0;34m'
 reset='\033[0m'
 
-if [ ! "$(ls -A /home/backup/)" ]
+if [ ! "$(ls -A $dest_directory)" ]
 then
 	#Creation des sous dossier par jour de semaine si besoin
 	printf "================= ${cyan}CREATION DES REPERTOIRES${reset} =================\n"
@@ -34,11 +35,11 @@ then
 	done
 else
 	#Supprime tar.gz f'il en trouve
-	archives=$(find $destination/*.tar.gz | wc -l)
+	archives=$(find $dest/*.tar.gz | wc -l)
 	if [ $archives -gt 0 ]
 	then
         	printf "================= ${cyan}SUPPRESSION DES ARCHIVES${reset} =================\n"
-        	/bin/rm -r $destination/*.tar.gz
+        	/bin/rm -r $dest/*.tar.gz
 		if [ "$?" -eq "0" ]
 		then
 			printf "${green}success:${reset} Les archives précédentes sont supprimées\n\n"
@@ -48,16 +49,16 @@ else
 	fi
 fi
 
-if [ -d $destination ]
+if [ -d $dest ]
 then
 	#Backup BDD
 	printf "================= ${cyan}COPIE DES BDD${reset} =================\n"
 
-	databases=$(/usr/bin/mysql -u $user_mysql -p$pass_mysql -e "SHOW databases;" | grep -Ev "(Database|information_schema|mysql|performance_schema)")
+	databases=$(/usr/bin/mysql -u $user_mysql -p$pass_mysql -e "SHOW databases;" | grep -Ev "(Database|information_schema|mysql|performance_schema|slidebox|slidebox_save|wordpress)")
         for db in $databases;
 	do
 		printf "${blue}__BDD ${db^^}__${reset}\n"
-		/usr/bin/mysqldump -u $user -p$pass --force --opt --skip-lock-tables --events --databases $db | gzip > $destination/$db.sql.gz
+		/usr/bin/mysqldump -u $user_mysql -p$pass_mysql --force --opt --skip-lock-tables --events --databases $db | gzip > $dest/$db.sql.gz
 		if [ "$?" -eq "0" ]
         	then
         		printf "        ${green}success:${reset} La copie de la BDD est un succès\n"
@@ -66,7 +67,7 @@ then
         	fi
 
 		printf "${blue}__COPIE BDD ${db^^} DISTANT__${reset}\n"
-        	/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p $port' --ignore-errors $destination/$db.sql.gz $user@$adresse:$path_distant
+        	/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e "ssh -p ${port_distant}" --ignore-errors $dest/$db.sql.gz ${user_distant}@$address_distant:$path_distant
 		if [ "$?" -eq "0" ]
         	then
                 	printf "        ${green}success:${reset} La copie distante de la BDD est un succès\n\n"
@@ -75,7 +76,7 @@ then
         	fi
 	done
 
-	for site in $repertoire/*;
+	for site in $directory/*;
 	do
 		if [ -d $site ]
 		then
@@ -85,7 +86,7 @@ then
 
 			#Backup sur serveur local
 			printf "${blue}__RSYNC BACKUP__${reset}\n"
-			/usr/bin/rsync -az --delete --ignore-errors $site $destination
+			/usr/bin/rsync -az --delete --ignore-errors $site $dest
 			if [ "$?" -eq "0" ]
 			then
 				printf "	${green}success:${reset} La copie est un succès\n"
@@ -95,7 +96,7 @@ then
 
 			#Compression sur serveur local
 			printf "${blue}__COMPRESSION__${reset}\n"
-			cd $destination;
+			cd $dest;
 			/bin/tar -zcf $dir-$now.tar.gz $dir
 			if [ "$?" -eq "0" ]
 			then
@@ -106,7 +107,8 @@ then
 
 			#Backup sur server distant
 			printf "${blue}__COPIE DISTANTE__${reset}\n"
-			/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p $port' --ignore-errors $site $user@$adresse:$path_distant
+			/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e "ssh -p ${port_distant}" --ignore-errors $site ${user_distant}@$address_distant:$path_distant
+			#/usr/bin/rsync --rsync-path="/usr/bin/rsync" -az --delete -e 'ssh -p 1664' --ignore-errors $site geekoun@hoplaventure.synology.me:/volume1/save/$jour
 			if [ "$?" -eq "0" ]
 			then
 				printf "  	${green}success:${reset} La copie distante est un succès\n\n"

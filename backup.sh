@@ -13,7 +13,7 @@
 #
 
 now=$(/bin/date +"%d-%m-%Y") #date d'aujourd'hui
-jour=$(date +%A) #nom du jour de la semaine
+jour=$(/bin/date +%A) #nom du jour de la semaine
 dest_directory= "/your/dest_backup/" #chemin du dossier backup global
 dest="/your/dest_backup/$jour" #chemin du dossier backup par jour
 directory="/your/directory/to/save" #chemin à sauvegarder

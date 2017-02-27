@@ -1,18 +1,21 @@
 #!/bin/bash
+#------------------------------------------------------
+#    Backup journalière avec sauvegarde sur 7 jours
+#------------------------------------------------------
 
-#nom du jour de la semaine
-now=$(/bin/date +"%d-%m-%Y")
-jour=$(date +%A)
-dest_directory= "/your/dest_backup/"
-dest="/your/dest_backup/$jour"
-directory="/your/directory/to/save"
-path_distant="/your/directory/distant/$jour"
-user_mysql="your_user_name"
-pass_mysql="your_pass_name"
-user_distant="your_user_name_distant"
-pass_distant="your_user_pass_distant"
-address_distant="your_address_distant"
-port_distant="your_port_distant"
+now=$(/bin/date +"%d-%m-%Y") #date d'aujourd'hui
+jour=$(date +%A) #nom du jour de la semaine
+dest_directory= "/your/dest_backup/" #chemin du dossier backup global
+dest="/your/dest_backup/$jour" #chemin du dossier backup par jour
+directory="/your/directory/to/save" #chemin à sauvegarder
+user_mysql="your_user_name" #identifiant mysql
+pass_mysql="your_pass_name" #mot de passe mysql
+path_distant="/your/directory/distant/$jour" #chemin du serveur distant
+user_distant="your_user_name_distant" #identifiant du serveur distant
+pass_distant="your_user_pass_distant" #mot de passe du serveur distant
+address_distant="your_address_distant" #adresse du serveur distant
+port_distant="your_port_distant" #port du serveur distant
+#Couleur pour custom le texte
 red='\033[0;31m'
 green='\033[0;32m'
 cyan='\033[0;36m'
@@ -21,7 +24,7 @@ reset='\033[0m'
 
 if [ ! "$(ls -A $dest_directory)" ]
 then
-	#Creation des sous dossier par jour de semaine si besoin
+	#Creation des sous dossier par jour de semaine si besoin dans le dossier $dest_directory
 	printf "================= ${cyan}CREATION DES REPERTOIRES${reset} =================\n"
 	for x in lundi mardi mercredi jeudi vendredi samedi dimanche 
 	do
@@ -34,7 +37,7 @@ then
 		fi
 	done
 else
-	#Supprime tar.gz f'il en trouve
+	#Supprime tar.gz f'il en trouve de la semaine précédente
 	archives=$(find $dest/*.tar.gz | wc -l)
 	if [ $archives -gt 0 ]
 	then

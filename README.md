@@ -5,7 +5,7 @@ Retrouvez mes scripts shell dans cette zone ;-)
 <h2>BACKUP.SH</h2>
 <p>
 now=$(/bin/date +"%d-%m-%Y") #date d'aujourd'hui<br />
-jour=$(date +%A) #nom du jour de la semaine<br />
+jour=$(/bin/date +%A) #nom du jour de la semaine<br />
 dest_directory= "/your/dest_backup/" #chemin du dossier backup global<br />
 dest="/your/dest_backup/$jour" #chemin du dossier backup par jour<br />
 directory="/your/directory/to/save" #chemin à sauvegarder<br />
